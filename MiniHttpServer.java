@@ -20,21 +20,54 @@ public class MiniHttpServer {
                             + clientSocket.getInetAddress()
             );
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            clientSocket.getInputStream()
-                    )
-            );
+            handleClient(clientSocket);
+        }
+    }
+
+    private static void handleClient(Socket clientSocket) {
+
+        try (
+                Socket socket = clientSocket;
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(
+                                socket.getInputStream()
+                        )
+                )
+        ) {
+
+            String requestLine = reader.readLine();
+
+            if (requestLine == null || requestLine.isEmpty()) {
+                return;
+            }
+
+            System.out.println("Request: " + requestLine);
+
+            String[] requestParts = requestLine.split(" ");
+
+            if (requestParts.length != 3) {
+                System.out.println("Invalid HTTP request");
+                return;
+            }
+
+            String method = requestParts[0];
+            String path = requestParts[1];
+            String version = requestParts[2];
+
+            System.out.println("Method: " + method);
+            System.out.println("Path: " + path);
+            System.out.println("Version: " + version);
 
             String line;
 
             while ((line = reader.readLine()) != null
                     && !line.isEmpty()) {
 
-                System.out.println(line);
+                System.out.println("Header: " + line);
             }
 
-            clientSocket.close();
+        } catch (IOException e) {
+            System.out.println("Client error: " + e.getMessage());
         }
     }
 }
