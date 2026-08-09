@@ -1,6 +1,5 @@
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class MiniHttpServer {
 
@@ -13,12 +12,27 @@ public class MiniHttpServer {
         System.out.println("Server started on port " + PORT);
 
         while (true) {
+
             Socket clientSocket = serverSocket.accept();
 
             System.out.println(
                     "Client connected: "
                             + clientSocket.getInetAddress()
             );
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            clientSocket.getInputStream()
+                    )
+            );
+
+            String line;
+
+            while ((line = reader.readLine()) != null
+                    && !line.isEmpty()) {
+
+                System.out.println(line);
+            }
 
             clientSocket.close();
         }
