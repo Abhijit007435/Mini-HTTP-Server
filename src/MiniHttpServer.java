@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MiniHttpServer {
 
@@ -14,21 +16,22 @@ public class MiniHttpServer {
 
         System.out.println("Server started on port " + PORT);
 
-        while (true) {
+        ExecutorService threadPool =
+        Executors.newFixedThreadPool(10);
 
-            Socket clientSocket = serverSocket.accept();
+while (true) {
 
-System.out.println(
-        "Client connected: "
-                + clientSocket.getInetAddress()
-);
+    Socket clientSocket = serverSocket.accept();
 
-Thread clientThread = new Thread(
-        () -> handleClient(clientSocket)
-);
+    System.out.println(
+            "Client connected: "
+                    + clientSocket.getInetAddress()
+    );
 
-clientThread.start();
-        }
+    threadPool.execute(
+            () -> handleClient(clientSocket)
+    );
+}
     }
 
     private static void handleClient(Socket clientSocket) {
