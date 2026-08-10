@@ -94,9 +94,25 @@ while (true) {
                 path = "/index.html";
             }
 
-            Path filePath = Paths.get(
-                    ROOT_DIRECTORY + path
-            );
+           Path rootPath = Paths.get(ROOT_DIRECTORY)
+        .toAbsolutePath()
+        .normalize();
+
+Path filePath = rootPath
+        .resolve(path.substring(1))
+        .normalize();
+
+if (!filePath.startsWith(rootPath)) {
+
+    sendResponse(
+            outputStream,
+            "403 Forbidden",
+            "text/plain",
+            "Forbidden"
+    );
+
+    return;
+}
 
             if (!Files.exists(filePath)
                     || !Files.isRegularFile(filePath)) {
