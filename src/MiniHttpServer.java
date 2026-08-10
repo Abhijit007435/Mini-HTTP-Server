@@ -7,6 +7,7 @@ public class MiniHttpServer {
     private static final int PORT = 8080;
     private static final String ROOT_DIRECTORY = "static";
 
+    @SuppressWarnings("resource")
     public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(PORT);
@@ -17,12 +18,16 @@ public class MiniHttpServer {
 
             Socket clientSocket = serverSocket.accept();
 
-            System.out.println(
-                    "Client connected: "
-                            + clientSocket.getInetAddress()
-            );
+System.out.println(
+        "Client connected: "
+                + clientSocket.getInetAddress()
+);
 
-            handleClient(clientSocket);
+Thread clientThread = new Thread(
+        () -> handleClient(clientSocket)
+);
+
+clientThread.start();
         }
     }
 
